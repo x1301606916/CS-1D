@@ -4,7 +4,7 @@ This is the checkoff 1 code for 1D
 Our ALU function diagram as shown.
 ------
 
-| Operation | ALUFN[5:0] | hex |
+| Operation | ALUFN[5:0] | Hex |
 | ---------- | :-----------:  | :-----------: |
 ADD	| 000000 | 0x00
 SUB | 000001 | 0x01
