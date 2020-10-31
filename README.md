@@ -1,4 +1,5 @@
 This is the checkoff 1 code for 1D
+-------
 
 Our ALU function diagram as shown.
 | Operation | ALUFN[5:0] | hex |
