@@ -26,7 +26,7 @@ CMPEQ	| 110011 | 0x33
 CMPLT	| 110101 | 0x35
 CMPLE	| 110111 | 0x37
 
-Our AU has 2 modes: Self-testing mode and Operate Mode(capble with manual test).
+Our AU has 2 modes: Self-testing mode and Operate Mode(capable with manual test).
 
 ## Operate Mode/Manual Testing Mode
 1. Set io_dip[2][7] to 0 to select Operate Mode/Manual Testing mode
