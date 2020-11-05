@@ -26,10 +26,10 @@ CMPEQ	| 110011 | 0x33
 CMPLT	| 110101 | 0x35
 CMPLE	| 110111 | 0x37
 
-Our AU has 2 modes: Self-testing mode and manual mode.
+Our AU has 2 modes: Self-testing mode and Operate Mode(capble with manual test).
 
-## Manual Testing Mode
-1. Set io_dip[2][7] to 0 to select Manual Testing mode
+## Operate Mode/Manual Testing Mode
+1. Set io_dip[2][7] to 0 to select Operate Mode/Manual Testing mode
 2. Set io_dip[2][6] to 0, use io_dip[1:0] to set the first 16 bit input (A) 
 3. Set io_dip[2][6] to 1, use io_dip[1:0] to set the second 16 bit input (B)
 4. Use io_dip[2][5:0] to set the 6 bit ALUFN value
