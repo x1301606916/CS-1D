@@ -1,0 +1,15 @@
+module shifter (
+    input x[16],
+    input y[5],
+    input alufn[6],
+    output shift[16]
+  ) {
+
+  always {
+    case (alufn[1:0]) {
+      b00: shift = x << y; //SHL
+      b01: shift = x >> y; //SHR
+      b11: shift = $signed(x) >>> $signed(y); //SRA
+      default: shift = x; 
+  }
+}

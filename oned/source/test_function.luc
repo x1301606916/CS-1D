@@ -1,0 +1,332 @@
+module test_function (
+    input clk,  // clock
+    output alufun[6],
+    output passornot
+  ) {
+  .clk(clk) {
+    dff savedcounter[33]; //33 flip-flops to store value of counter
+  }
+
+  //inport alu for test
+  alu16 alu;
+  comparator compare;
+  
+  always {  
+    //increase the value of counter by one
+    //clk is 100Mhz, 0101111101011110000100000000Hz in binary, counter bit 28 to 31 are used for different functions to test
+    savedcounter.d=savedcounter.q+1;
+    
+    //x value of alu is always set to be this value
+    alu.x=b0100110001110000;
+    
+    //z v and n value for comparator are set to be always 1
+    compare.z=1;
+    compare.n=1;
+    compare.v=1;
+    
+    case(savedcounter.q[32:28]){
+    
+      //test for addder,alufn value are signed to comparator module but not used for testing alu without comparator
+      b00000:
+        alu.alufn=b000000;
+        alu.y=b0000000000000001;
+        alufun=b000000;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0100110001110001){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for adder with overflow
+      b00001:
+        alu.alufn=b000000;
+        alu.y=b0100110001110000;
+        alufun=b000000;
+        compare.alufn=b110011;
+        //check if the result pass
+        passornot=alu.v;
+        
+      //test for sub
+      b00010:
+        alu.alufn=b000001;
+        alu.y=b0000000000000001;
+        alufun=b000001;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0100110001101111){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for mul
+      b00011:
+        alu.alufn=b000010;
+        alu.y=b0000000000000001;
+        alufun=b000010;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0100110001110000){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for dev
+      b00100:
+        alu.alufn=b000100;
+        alu.y=b0000000000000010;
+        alufun=b000100;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0010011000111000){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for mod
+      b00101:
+        alu.alufn=b000110;
+        alu.y=b0000000010000000;
+        alufun=b000110;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0000000001110000){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+        }
+      
+      //test for and
+      b00110:
+        alu.alufn=b011000;
+        alu.y=b0000110001110001;
+        alufun=b011000;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0000110001110000){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for nand
+      b00111:
+        alu.alufn=b010111;
+        alu.y=b0000110001110001;
+        alufun=b010111;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b1111001110001111){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+       
+      //test for or 
+      b01000:
+        alu.alufn=b011110;
+        alu.y=b0000110001110001;
+        alufun=b011110;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0100110001110001){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+      
+      //test for nor 
+      b01001:
+        alu.alufn=b010001;
+        alu.y=b0000110001110001;
+        alufun=b010001;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b1011001110001110){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for xor 
+      b01010:
+        alu.alufn=b010110;
+        alu.y=b0000110001110001;
+        alufun=b010110;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0100000000000001){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for xnor 
+      b01011:
+        alu.alufn=b011001;
+        alu.y=b0000110001110001;
+        alufun=b011001;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b1011111111111110){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for "a"(LDR) 
+      b01100:
+        alu.alufn=b011010;
+        alu.y=b0000110001110001;
+        alufun=b011010;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0100110001110000){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for "b"
+      b01101:
+        alu.alufn=b010101;
+        alu.y=b0000110001110001;
+        alufun=b010101;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0000110001110001){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for SHL
+      b01110:
+        alu.alufn=b100000;
+        alu.y=b10;
+        alufun=b100000;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0011000111000000){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for SHR
+      b01111:
+        alu.alufn=b100001;
+        alu.y=b10;
+        alufun=b100001;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0001001100011100){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for SRA
+      b10000:
+        alu.alufn=b100011;
+        alu.y=b10;
+        alufun=b100011;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b0001001100011100){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for SRA
+      b10001:
+        alu.alufn=b100011;
+        alu.x=b1000000000000000;
+        alu.y=b10;
+        alufun=b100011;
+        compare.alufn=b110011;
+        //check if the result pass
+        if (alu.out==b1110000000000000){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for CMPEQ, y and alufn value are signed to alu module but not used for testing comparator
+      b10010:
+        alu.y=0;
+        alu.alufn=b000000;
+        compare.alufn=b110011;
+        alufun=b110011;
+        //check if the result pass
+        if (compare.out==b1){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for CMPLT
+      b10011:
+        alu.y=0;
+        alu.alufn=b000000;
+        compare.alufn=b110101;
+        alufun=b110101;
+        //check if the result pass
+        if (compare.out==b0){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //test for CMPLE
+      b10100:
+        alu.y=0;
+        alu.alufn=b000000;
+        compare.alufn=b110111;
+        alufun=b110111;
+        //check if the result pass
+        if (compare.out==b1){
+          passornot=b1;
+          }
+        else{
+          passornot=b0;
+          }
+        
+      //set defalt value for alu and comparator when not used
+      //reset the counter value to 0 when not match above conditions(not valid to select functions to test).
+      default:
+        alu.y=0;
+        alu.alufn=b000000;
+        compare.alufn=110011;
+        alufun=b111111;
+        savedcounter.d=0;
+        
+        
+       }
+        
+  }
+}

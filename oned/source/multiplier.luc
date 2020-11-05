@@ -1,0 +1,25 @@
+module multiplier (
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output out[16]
+  ) {
+  sig out32[32]; //while we only take the 16 LSB, we need the total still
+  always {
+    case(alufn[2:1])_{
+      b01: out32 = $signed(x) * $signed(y); //multiply
+      b10: if (y==0) { //divide
+            out32 = 0; //cannot divide by 0
+        } else {
+            out32 = $signed(x) / $signed(y);
+        }
+      b11: if (y==0) { //modulo
+            out32 = 0; //divide by zero
+        } else {
+            out32 = x - (x / y * y);
+        }
+      default: out32 = 0;
+      
+  }
+    out = out32[15:0];
+}

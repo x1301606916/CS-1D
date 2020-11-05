@@ -1,0 +1,113 @@
+module alu16 (
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output out[16],
+    output z[1],
+    output v[1],
+    output n[1],
+    output invalidalufn[1] //if alufn doesn't correspond to any instructions
+  ) {
+  // add all the functions
+  // add/sub
+  full_adder_16_bit add;
+  // boolean
+  boolean boole;
+  // shifter
+  shifter shift;
+  // comparator
+  comparator cmp;
+  // multiplier
+  multiplier mult;
+
+  always {
+  // connect the inputs for all the submodules
+    // adder
+    add.x = x;
+    add.y = y;
+    add.alufn = alufn;
+    
+    // boolean
+    boole.x = x;
+    boole.y = y;
+    boole.alufn = alufn;
+    
+    // shifter
+    shift.x = x;
+    shift.y = y;
+    shift.alufn = alufn;
+    
+    // comparator
+    cmp.alufn = alufn;
+    cmp.z = add.z;
+    cmp.v = add.v;
+    cmp.n = add.n;
+    
+    //multiplier
+    mult.alufn = alufn;
+    mult.x = x;
+    mult.y = y;
+    
+    //defaults for z, v, n and out
+    z = 1b0;
+    v = 1b0;
+    n = 1b0;
+    out = 16b0;
+    
+    // default invalid alufn
+    invalidalufn = 1b0;
+    
+    // connect outputs with the submodules' outputs based on the alufn
+    case(alufn) {
+      6b000000: // addition
+        out = add.sum;
+        z = add.z;
+        v = add.v;
+        n = add.n;
+      6b000001: // subtraction
+        out = add.sum;
+        z = add.z;
+        v = add.v;
+        n = add.n;
+      6b000010: // multiplication
+        out = mult.out;
+      6b000100: // division
+        out = mult.out;
+      6b000110: // modulo
+        out = mult.out;
+      6b011000: // AND
+        out = boole.boole;
+      6b011110: // OR 
+        out = boole.boole;
+      6b010110: // XOR
+        out = boole.boole;
+      6b011010: // A
+        out = boole.boole;
+      6b010111: // NAND
+        out = boole.boole;
+      6b010001: // NOR
+        out = boole.boole;
+      6b011001: // XNOR
+        out = boole.boole;
+      6b010101: // B
+        out = boole.boole;
+      6b100000: // SHL
+        out = shift.shift;
+      6b100001: // SHR
+        out = shift.shift;
+      6b100011: // SRA
+        out = shift.shift;
+      6b110011: // CMPEQ
+        out = cmp.out;
+      6b110101: // CMPLT
+        out = cmp.out;
+      6b110111: // CMPLE
+        out = cmp.out;
+      default: // if no valid alufn
+        out = 16b0;
+        invalidalufn = 1b1;
+        
+
+    } 
+  }
+}

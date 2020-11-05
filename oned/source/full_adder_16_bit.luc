@@ -1,0 +1,33 @@
+module full_adder_16_bit (
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output sum[16],
+    output z[1],
+    output v[1],
+    output n[1]
+  ) {
+  sig s[16]; //sum is write only, cannot read thus need an intermediate 
+  always {
+    //start with s = 16 zeroes
+    s = 16b0;
+    //case for addition or subtraction, based on alufn[0]
+    case(alufn[0]) {
+      b0: s = x + y;
+      b1: s = x - y;
+      default: s = 16b0;
+  }
+    //z is true when all s outputs are zero
+    //nor gate s with zero
+    z = ~| s;
+    
+    //V is true when it overflows (follow lab 3 boolean operation)
+    //remember to XOR y with alufn[0] for subtraction
+    v = (x[15] & (y[15] ^ alufn[0]) & !s[15]) | (!x[15] & !(y[15] ^ alufn[0]) & s[15]);
+    
+    //n is true(1) when s is negative (s[15] = 1)
+    n = s[15];
+    
+    //finally remember to set out to intermediate s
+    sum = s;
+}

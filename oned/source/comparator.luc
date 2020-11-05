@@ -1,0 +1,28 @@
+module comparator (
+    input n[1],
+    input v[1],
+    input z[1],
+    input alufn[6],
+    output out[16]
+  ) {
+  
+
+  always {
+  
+    
+    //default set out to 0
+    out = 16b0;
+    //choosing the different cases based on alufn[2] and alufn[1]
+    case(alufn[2]) {
+      b0: case(alufn[1]) {
+          //when A = B 
+          b1: out[0] = z;
+      }
+      b1: case(alufn[1]) {
+          //when A less than B
+          b0: out[0] = n ^ v;
+          //when A more than B
+          b1: out[0] = z | (n ^ v);
+      }
+    }
+}

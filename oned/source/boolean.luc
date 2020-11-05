@@ -1,0 +1,20 @@
+module boolean (
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output boole[16]
+  ) {
+
+  always {
+  case(alufn[3:0]) {
+    b1000: boole = x&y; //and
+    b1110: boole = x|y; //or
+    b0110: boole = x^y; //xor 
+    b1010: boole = x; //a
+    b0111: boole=~(x&y); //nand
+    b0001: boole=~(x|y); //nor
+    b1001: boole=~(x^y); //xnor
+    b0101: boole=y;//b
+    default: boole = 16b0;
+  }
+}

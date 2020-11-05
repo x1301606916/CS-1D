@@ -1,0 +1,95 @@
+module au_top (
+    input clk,              // 100MHz clock
+    input rst_n,            // reset button (active low)
+    output led [8],         // 8 user controllable LEDs
+    input usb_rx,           // USB->Serial input
+    output usb_tx,          // USB->Serial output
+    output io_led [3][8],   // LEDs on IO Shield
+    output io_seg [8],      // 7-segment LEDs on IO Shield
+    output io_sel [4],      // Digit select on IO Shield
+    input io_dip [3][8],     // DIP switches on IO Shield
+    input io_button [5]    // 5 buttons on IO Shield  never used button, but will get error when removing this line
+    
+  ) {
+  
+  sig rst;                  // reset signal
+  alu16 alu;
+  test_function instance_test_function;
+
+  
+  .clk(clk) {
+    // The reset conditioner is used to synchronize the reset signal to the FPGA
+    // clock. This ensures the entire FPGA comes out of reset at the same time.
+    reset_conditioner reset_cond;
+    dff savedx[16]; //16 flip-flops to store value of x
+    dff savedy[16]; //16 flip-flops to store value of y
+  }
+  
+  always {
+    //assign the clock for test_function
+    instance_test_function.clk=clk;
+
+    //assign for alu_top   
+    reset_cond.in = ~rst_n; // input raw inverted reset signal
+    rst = reset_cond.out;   // conditioned reset
+    
+    usb_tx = usb_rx;        // loop serial port
+    
+    led = 8h00;             // turn LEDs off
+    
+    io_led = 3x{{8h00}};    // turn LEDs off
+    io_seg = 8hff;          // turn segments off
+    io_sel = 4hf;           // select no digits
+
+    if(io_dip[2][7]==0){
+      alu.alufn = io_dip[2][5:0];//alu function is last 6 bits of io_dip[2] 
+    
+      alu.x=savedx.q;//input the value of x from Q site of flip-flops that store value of x to alu
+      alu.y=savedy.q;//input the value of y from Q site of flip-flops that store value of y to alu
+    
+    //first digit of io_dip[2] is used to switch between input value of x and y
+    //io_dip[1] aroup and io_dip[0] aroup together are used for 16 bits inputs
+      if(io_dip[2][6]){
+        savedy.d[7:0] = io_dip[0][7:0];
+        savedy.d[15:8] = io_dip[1][7:0];//when io_dip[2][6] is set to 1, flip-flops that store value of y receives inputs and stores the value
+        io_led[2][5] = 1;//led[2][5] is on to indicate we are changing the value of y
+      }
+      else{
+        savedx.d[7:0] = io_dip[0][7:0];
+        savedx.d[15:8] = io_dip[1][7:0];//when io_dip[2][6] is set to 0, flip-flops that store value of x receives inputs and stores the value
+        io_led[2][6] = 1;//led[2][6] is on to indicate we are changing the value of x
+      }
+ 
+      io_led[0][7:0] = alu.out[7:0];
+      io_led[1][7:0] = alu.out[15:8];//led[1] group and led[0] aroup together are 16 bit output aluout of alu
+      io_led[2][0] = alu.z;//led[2][0] is output z of alu function(on when outputs are all 0)
+      io_led[2][1] = alu.v;//led[2][1] is output v of alu function(on when addition overflows)
+      io_led[2][2] = alu.n;//led[2][2] is output n of alu function(on when output is negative)
+      io_led[2][7] = alu.invalidalufn;//led[2][7] is on when the input alu function is invalid
+    }
+      
+    //self test started when io_dip[2][7] is set to 1
+    else{
+      //assign default x y and alufu value for alu, but not used for self test
+      alu.x=0;
+      alu.y=0;
+      alu.alufn=b000000;
+      
+      //All the leds for led group 0 are on to indicate we are in the mode of self test
+      io_led[0][7:0]=b11111111;
+      
+      //last 6 bits of led group2 are used to indicate current alufunction we are testing
+      io_led[2][5:0]=instance_test_function.alufun;
+      
+      //All the leds for led group 1 are on to indicate we passed test
+      io_led[1][7]=instance_test_function.passornot;
+      io_led[1][6]=instance_test_function.passornot;
+      io_led[1][5]=instance_test_function.passornot;
+      io_led[1][4]=instance_test_function.passornot;
+      io_led[1][3]=instance_test_function.passornot;
+      io_led[1][2]=instance_test_function.passornot;
+      io_led[1][1]=instance_test_function.passornot;
+      io_led[1][0]=instance_test_function.passornot;
+    }
+  }
+}

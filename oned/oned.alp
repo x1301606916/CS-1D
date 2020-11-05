@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="oned" board="Alchitry Au" language="Lucid" version="3">
+  <files>
+    <src>full_adder_16_bit.luc</src>
+    <src top="true">au_top.luc</src>
+    <src>alu16.luc</src>
+    <src>boolean.luc</src>
+    <src>comparator.luc</src>
+    <src>shifter.luc</src>
+    <component>reset_conditioner.luc</component>
+    <src>full_adder.luc</src>
+    <src>test_function.luc</src>
+    <src>multiplier.luc</src>
+    <constraint lib="true">alchitry.acf</constraint>
+    <constraint lib="true">io.acf</constraint>
+    <constraint lib="true">au.xdc</constraint>
+  </files>
+</project>
